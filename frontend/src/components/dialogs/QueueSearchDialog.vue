@@ -72,11 +72,16 @@ const key = useField('key')
                     :error-messages="key.errorMessage.value"
                     ></VTextField>
 
-                    <div class="d-flex justify-end">
-                        <VBtn type="submit">Join</VBtn>
-                    </div>
+                    <!-- <div class="d-flex justify-end">
+                        <VBtn type="submit">Connect</VBtn>
+                    </div> -->
                 </VForm>
             </VCardText>
+
+            <VCardActions>
+                <VSpacer></VSpacer>
+                <VBtn @click="submit">Connect</VBtn>
+            </VCardActions>
         </VCard>
     </VDialog>
 </template>

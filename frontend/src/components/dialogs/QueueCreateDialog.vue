@@ -115,11 +115,16 @@ onMounted(() => {
                     item-value="value"
                     ></VSelect>
 
-                    <div class="d-flex justify-end">
+                    <!-- <div class="d-flex justify-end">
                         <VBtn type="submit">Create</VBtn>
-                    </div>
+                    </div> -->
                 </VForm>
             </VCardText>
+
+            <VCardActions>
+                <VSpacer></VSpacer>
+                <VBtn @click="submit">Create</VBtn>
+            </VCardActions>
         </VCard>
     </VDialog>
 </template>
