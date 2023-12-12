@@ -85,17 +85,6 @@ export const useQueueStore = defineStore('queue-store', () => {
         return element;
     }
 
-    function setDefaultQueueToList() {
-        queueList.value.splice(0, 0, queueObject)
-    }
-
-    function removeDefaultQueueFromList() {
-        let index = queueList.value.findIndex(
-            value => value.key == queueObject.key
-        );
-        queueList.value.splice(index, 1);
-    }
-
     async function setQueueList() {
         try {
             const authStore = useAuthStore();
@@ -132,9 +121,11 @@ export const useQueueStore = defineStore('queue-store', () => {
 
     function createQueue(rawQueue) {
         const queue = makeQueueObject(rawQueue);
-        // addQueueToHeadList(queue);
         queueList.value.splice(0, 0, queue);
         setQueueConnect(queue);
+
+        // 
+        setQueueList()
     }
 
     function searchQueue(rawQueue) {
@@ -157,10 +148,7 @@ export const useQueueStore = defineStore('queue-store', () => {
         setUserData,
         updateUserData,
         makeUserObject,
-
-        setDefaultQueueToList,
-        removeDefaultQueueFromList,
-
+        
         setQueueList,
         setQueueConnect,
 
