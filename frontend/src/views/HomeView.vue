@@ -39,13 +39,13 @@ async function userLogout() {
 <template>
     <VToolbar>
         <template v-slot:prepend>
-            <VBtn>Profile</VBtn>
-            <VBtn :active="isActiveQueues" @click="activeQueuesContent">Queues</VBtn>
+            <!-- <VBtn>Profile</VBtn> -->
+            <!-- <VBtn :active="isActiveQueues" @click="activeQueuesContent">Queues</VBtn> -->
         </template>
 
         <template v-slot:append>
-            <VBtn :active="isActiveSettings" @click="activeSettingsContent">Settings</VBtn>
-            <VBtn @click="userLogout">Log Out</VBtn>
+            <VBtn icon="mdi-account"></VBtn>
+            <VBtn icon="mdi-logout" @click="userLogout"></VBtn>
         </template>
     </VToolbar>
 
