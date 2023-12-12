@@ -18,8 +18,8 @@ function afterResponse(response) {
     console.log(response)
 
     const token = response.data['key'];
-    authStore.isAuthenticated = true;
-    authStore.authorizationToken = token;
+    authStore['isAuthenticated'] = true;
+    authStore['authorizationToken'] = token;
 
     // 
     setLocalStorage(
