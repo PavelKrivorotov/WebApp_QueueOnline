@@ -1,8 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
+import { useAuthStore } from '../pinia/auth-store'
+
 import HomeView from '../views/HomeView.vue';
+import AuthView from '../views/AuthView.vue'
 import LoginView from '../views/LoginView.vue';
 import RegistrationView from '../views/RegistrationView.vue';
+
 
 const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
@@ -11,23 +15,31 @@ const router = createRouter({
 			path: '/',
 			name: 'home-view',
 			component: HomeView,
+
+			beforeEnter: (to, from) => {
+				const authStore = useAuthStore()
+				if (!authStore['isAuthenticated']) {
+					return { name: 'login-view' }
+				}
+			}
 		},
 		{
 			path: '/auth',
 			name: 'auth-view',
+			component: AuthView,
 			redirect: {
-				name: 'registartion-view',
+				name: 'login-view',
 			},
 			children: [
-				{
-					path: 'registration/',
-					name: 'registartion-view',
-					component: RegistrationView,
-				},
 				{
 					path: 'login/',
 					name: 'login-view',
 					component: LoginView,
+				},
+				{
+					path: 'registration/',
+					name: 'registartion-view',
+					component: RegistrationView,
 				},
 			]
 		},
