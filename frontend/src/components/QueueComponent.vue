@@ -8,12 +8,6 @@ import { queueQueues } from '../http/requests';
 import QueueCreateDialog from './dialogs/QueueCreateDialog.vue';
 import QueueSearchDialog from './dialogs/QueueSearchDialog.vue';
 
-const emits = defineEmits([
-    'queue:create',
-    'queue:connect',
-    'queue:join',
-]);
-
 const authStore = useAuthStore();
 const queueStore = useQueueStore();
 
