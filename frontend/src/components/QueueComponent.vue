@@ -95,12 +95,14 @@ onMounted(() => {
 
         <VList>
             <VListItem
+            prepend-icon="mdi-plus"
             @click="isActiveQueueCreateDialog = true"
             >
                 Create
             </VListItem>
 
             <VListItem
+            prepend-icon="mdi-magnify"
             @click="isActiveQueueSearchDialog = true"
             >
                 Search
