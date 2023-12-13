@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 
 from .base import BaseAuthCRUD
 from .models import User, Token
+from .dependencies import BaseAuthDepends
 from .schemes import UserCreateSchemeIN, TokenCreateSchemeIN
 from .utils import make_hash_password, make_token
 
@@ -45,8 +46,10 @@ class AuthCRUD(BaseAuthCRUD):
         db.refresh(token)
         return token
 
-    def logout(self) -> str | None:
-        pass
+    def logout(self, db: Session, auth: BaseAuthDepends) -> None:
+        db.delete(auth.token)
+        auth.token = None
+        db.commit()
 
     def _refresh_token(self, db: Session, token: Token, user_id: int) -> Token:
         # Magic refreshing...

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends, status
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 from sqlalchemy.orm import Session
 
 from database import db_connection
@@ -10,7 +10,7 @@ from .schemes import (
     TokenRetrieveSchemeOUT,
 )
 from .services import auth
-from .dependencies import  AllowAny
+from .dependencies import AllowAny, BaseAuthDepends, IsAuthenticated
 
 
 router = APIRouter()
@@ -49,4 +49,15 @@ def user_login(
     return JSONResponse(
         content = TokenRetrieveSchemeOUT.model_validate(token).model_dump(),
         status_code = status.HTTP_202_ACCEPTED
+    )
+
+@router.delete('/user/logout')
+def user_logout(
+        user: BaseAuthDepends = Depends(IsAuthenticated),
+        db: Session = Depends(db_connection)
+    ) -> JSONResponse:
+
+    result = auth.logout(db, user)
+    return Response(
+        status_code = status.HTTP_204_NO_CONTENT
     )

@@ -25,10 +25,6 @@ class BaseAuthCRUD:
         return user
     
     @classmethod
-    def get_user_by_token(cls, db: Session, token: str) -> User | None:
+    def _retrieve_token(cls, db: Session, token: str) -> Token | None:
         token = db.query(Token).where(Token.key == token).first()
-        if (token is None):
-            return None
-
-        user = db.query(User).where(User.id == token.user_id).first()
-        return user
+        return token
