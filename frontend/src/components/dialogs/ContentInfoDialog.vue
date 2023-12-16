@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue';
-import { useQueueStore } from '../../pinia/queue-store';
+// import { useQueueStore } from '../../pinia/queue-store';
+import { useQueueUserStore } from '../../pinia/queue-user-store';
 
 const props = defineProps({
     isActive: Boolean,
@@ -10,7 +11,7 @@ const emits = defineEmits([
     'click:close'
 ]);
 
-const queueStore = useQueueStore();
+const queueUserStore = useQueueUserStore();
 </script>
 
 <template>
@@ -35,31 +36,31 @@ const queueStore = useQueueStore();
                 <VForm>
                     <VTextField
                     label="Title"
-                    v-model="queueStore['queueObject']['title']"
+                    v-model="queueUserStore['queueObject']['title']"
                     readonly
                     ></VTextField>
 
                     <VTextField
                     label="Key"
-                    v-model="queueStore['queueObject']['key']"
+                    v-model="queueUserStore['queueObject']['key']"
                     readonly
                     ></VTextField>
 
                     <VTextField
                     label="Date of created"
-                    v-model="queueStore['queueObject']['created']"
+                    v-model="queueUserStore['queueObject']['created']"
                     readonly
                     ></VTextField>
 
                     <VTextField
                     label="Lifetime"
-                    v-model="queueStore['queueObject']['lifetime']"
+                    v-model="queueUserStore['queueObject']['lifetime']"
                     readonly
                     ></VTextField>
 
                     <VTextField
                     label="Is active"
-                    v-model="queueStore['queueObject']['state']"
+                    v-model="queueUserStore['queueObject']['state']"
                     readonly
                     ></VTextField>
                 </VForm>

@@ -3,13 +3,14 @@ import { ref, onMounted } from 'vue';
 
 import { useAuthStore } from '../pinia/auth-store';
 import { useQueueStore } from '../pinia/queue-store';
-import { queueQueues } from '../http/requests';
+import { useQueueUserStore } from '../pinia/queue-user-store';
 
 import QueueCreateDialog from './dialogs/QueueCreateDialog.vue';
 import QueueSearchDialog from './dialogs/QueueSearchDialog.vue';
 
 const authStore = useAuthStore();
 const queueStore = useQueueStore();
+const queueUserStore = useQueueUserStore();
 
 const isActiveQueueCreateDialog = ref(false);
 const isActiveQueueSearchDialog = ref(false);
@@ -77,7 +78,7 @@ onMounted(() => {
                                 icon
                                 v-bind="props"
                                 size="x-small"
-                                @click="queueStore.setQueueConnect(item)"
+                                @click="queueUserStore.setQueueConnect(item)"
                                 >
                                     <VIcon>mdi-login</VIcon>
                                 </VBtn>

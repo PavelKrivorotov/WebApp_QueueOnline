@@ -2,10 +2,10 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
+import * as settings from '../settings'
+import { removeLocalStorage } from '../localstorage';
 import { useAuthStore } from '../pinia/auth-store';
 import { authLogout } from '../http/requests'
-import { LOCALSTORAGE } from '../settings';
-import { removeLocalStorage } from '../localstorage';
 
 import QueueComponent from '../components/QueueComponent.vue'
 import ContentComponent from '../components/ContentComponent.vue';
@@ -22,7 +22,7 @@ async function userLogout() {
         authStore['authorizationToken'] = null;
 
         // 
-        removeLocalStorage(LOCALSTORAGE['AUTHORIZATION_TOKEN'])
+        removeLocalStorage(settings.LOCALSTORAGE['AUTHORIZATION_TOKEN'])
         
         // 
         router.push({

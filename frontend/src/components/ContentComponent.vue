@@ -1,42 +1,27 @@
 <script setup>
 import { ref, watch, onMounted } from 'vue';
 
-import { useAuthStore } from '../pinia/auth-store';
-import { useQueueStore , setQueueStore} from '../pinia/queue-store';
-import { LOCALSTORAGE } from '../settings';
+import * as settings from '../settings'
 import { setLocalStorage } from '../localstorage'
+import { useAuthStore } from '../pinia/auth-store';
+import { useQueueStore } from '../pinia/queue-store';
+import { useQueueUserStore } from '../pinia/queue-user-store';
+import { useTableStore } from '../pinia/table-store';
 
+import RoleComponent from './content-components/RoleComponent.vue';
 import ConfirmDialog from './dialogs/ConfirmDialog.vue';
 import ContentInfoDialog from './dialogs/ContentInfoDialog.vue';
 
 const authStore = useAuthStore()
 const queueStore = useQueueStore();
+const queueUserStore = useQueueUserStore();
+const tableStore = useTableStore();
 
 const isActiveLeaveConfirmDialog = ref(false);
 const isActiveInfoDialog = ref(false);
 
-const tableHeaders = ref([
-    {
-        title: 'position',
-        key: 'position',
-    },
-    {
-        title: 'user_id',
-        key: 'userId',
-    },
-    {
-        title: 'role',
-        key: 'queueRole'
-    },
-    {
-        title: 'action',
-        key: 'action'
-    }
-]);
-const tableItems = ref([])
-
 watch(
-    () => queueStore['wsConnect'],
+    () => queueUserStore['wsConnect'],
     (newConnect, oldConnect) => {
         console.log('watch worked in ContentComponent')
 
@@ -47,32 +32,30 @@ watch(
             console.log('oldConnect: ', oldConnect)
 
             oldConnect.close();
-            tableItems.value.splice(0, tableItems.value.length);
+            tableStore.clearTableItems();
         }
         // 
 
 
-        queueStore['wsConnect'].onmessage = (event) => {
+        queueUserStore['wsConnect'].onmessage = (event) => {
             const response = JSON.parse(event.data);
             console.log(response)
             // 
             switch (response['action']['action_key']) {
                 // connect
                 case 'QA00003':
-                    // 
-                    // setLocalQueueKey(response['action']['queue_key']);
                     setLocalStorage(
-                        LOCALSTORAGE['QUEUE_KEY'],
+                        settings.LOCALSTORAGE['QUEUE_KEY'],
                         response['action']['queue_key']
                     );
 
-                    queueStore['queueObject']['key'] = response['action']['queue_key'];
-                    queueStore.setUserData(
-                        queueStore.makeUserObject(response['user'])
+                    queueUserStore['queueObject']['key'] = response['action']['queue_key'];
+                    queueUserStore.setUserData(
+                        queueUserStore.makeUserObject(response['user'])
                     )
 
-                    clearTableItems();
-                    setTableItems(response['users']);
+                    tableStore.clearTableItems();
+                    tableStore.setTableItems(response['users']);
                     break;
                 
                 // disconnect
@@ -81,26 +64,26 @@ watch(
 
                 // join
                 case 'QA00005':
-                    queueStore.setUserData(
-                        queueStore.makeUserObject(response['user'])
+                    queueUserStore.setUserData(
+                        queueUserStore.makeUserObject(response['user'])
                     )
-                    // queueStore.setDefaultQueueToList();
+
                     queueStore.setQueueList();
 
-                    setTableItems(response['users']);
-                    updateActionPermissions();
+                    tableStore.setTableItems(response['users']);
+                    tableStore.refreshTableItems();
                     break;
 
                 // leave
                 case 'QA00006':
-                    queueStore.setUserData(
-                        queueStore.makeUserObject(response['user'])
-                    )
-                    // queueStore.removeDefaultQueueFromList();
+                    queueUserStore.setUserData(
+                        queueUserStore.makeUserObject(response['user'])
+                    );
+
                     queueStore.setQueueList();
 
-                    clearTableItems();
-                    setTableItems(response['users']);
+                    tableStore.clearTableItems();
+                    tableStore.setTableItems(response['users']);
                     break;
 
                 // replace-offer
@@ -113,9 +96,10 @@ watch(
 
                 // skip
                 case 'QA00009':
-                    queueStore.updateUserData(response['users']);
-                    clearTableItems();
-                    setTableItems(response['users']);
+                    queueUserStore.updateUserData(response['users']);
+
+                    tableStore.clearTableItems();
+                    tableStore.setTableItems(response['users']);
                     break;
 
                 default:
@@ -123,32 +107,14 @@ watch(
             }
         }
 
-        queueStore['wsConnect'].onclose = (event) => {
+        queueUserStore['wsConnect'].onclose = (event) => {
             console.log('Close connect!', event);
         }
     }
 )
 
-function swapState(item) {
-    if (queueStore['userObject']['position']) {
-        if (item.position == queueStore['userObject']['position'] + 1) {
-            return true;
-        }
-    }
-    return false;
-}
-
-function replaceState(item) {
-    if (queueStore['userObject']['position']) {
-        if (item.position != queueStore['userObject']['position']) {
-            return true;
-        }
-    }
-    return false;
-}
-
 function joinButtonClick() {
-    queueStore['wsConnect'].send(
+    queueUserStore['wsConnect'].send(
         JSON.stringify({
             action_key: 'QA00005'
         })
@@ -157,7 +123,7 @@ function joinButtonClick() {
 
 function leaveButtonClick() {
     isActiveLeaveConfirmDialog.value = false;
-    queueStore['wsConnect'].send(
+    queueUserStore['wsConnect'].send(
         JSON.stringify({
             action_key: 'QA00006'
         })
@@ -165,7 +131,7 @@ function leaveButtonClick() {
 }
 
 function skipButtonClick(item) {
-    queueStore['wsConnect'].send(
+    queueUserStore['wsConnect'].send(
         JSON.stringify({
             action_key: 'QA00009',
             passive_queue_user_id: item.userId,
@@ -173,242 +139,50 @@ function skipButtonClick(item) {
     );
 }
 
-function clearTableItems() {
-    tableItems.value.splice(0, tableItems.value.length)
-}
-
-function setTableItems(items) {
-    items.forEach(element => {
-        const clearElement = queueStore.makeUserObject(element);
-        tableItems.value.push(
-            makeTableItem(clearElement)
-        );
-    });
-}
-
-// 
-function updateActionPermissions() {
-    tableItems.value.forEach(element => {
-        element.actionPermissions.swap = swapState(element);
-        element.actionPermissions.replace = replaceState(element);
-    });
-}
-// 
-
-function makeTableItem(clearElement) {
-    return {
-        position: clearElement['position'],
-        userId: clearElement['userId'],
-        queueRole: clearElement['role'],
-        action: null,
-        actionPermissions: {
-            swap: swapState(clearElement),
-            replace: replaceState(clearElement),
-        }
-    }
-}
-
 onMounted(() => {
-    setQueueStore();
+    queueUserStore.setQueueUserStore();
 })
 </script>
 
 <template>
-    <div v-if="queueStore['userObject']['role'] == 'QR00001'">
+    <div v-if="queueUserStore['userObject']['role'] == 'QR00001'">
     <!-- <div v-if="true"> -->
-        <VCard>
-            <VToolbar>
-                <template v-slot:title>
-                    {{ queueStore['queueObject']['title'] }}
-                </template>
-
-                <template v-slot:append>
-                    <VBtn @click="isActiveInfoDialog = true">Info</VBtn>
-                    <VBtn @click="joinButtonClick">Join</VBtn>
-                </template>
-            </VToolbar>
-
-            <VCardText>
-                <VDataTableVirtual
-                :headers="tableHeaders"
-                :items="tableItems"
-                height="300"
-                ></VDataTableVirtual>
-
-                <VBtn>Not Member</VBtn>
-            </VCardText>
-
-            <VToolbar
-            density="compact"
-            >
-                <template v-slot:append>
-                    <div class="px-4">
-                        <span class="text-button">Role: </span>
-                        <span class="text-button">Not Member ({{ queueStore['userObject']['role'] }})</span>
-                    </div>
-                </template>
-            </VToolbar>
-        </VCard>
+        <RoleComponent
+        @click:swap="item => console.log('swap (not member): ', item)"
+        @click:replace="item => console.log('replace (not member): ', item)"
+        >
+            <template v-slot:not-member>
+                <VBtn @click="isActiveInfoDialog = true">Info</VBtn>
+                <VBtn @click="joinButtonClick">Join</VBtn>
+            </template>
+        </RoleComponent>
     </div>
 
-    <div v-else-if="queueStore['userObject']['role'] == 'QR00002'">
+    <div v-else-if="queueUserStore['userObject']['role'] == 'QR00002'">
     <!-- <div v-else-if="true"> -->
-        <VCard>
-            <VToolbar>
-                <template v-slot:title>
-                    {{ queueStore['queueObject']['title'] }}
-                </template>
-
-                <template v-slot:append>
-                    <!-- <VBtn @click="leaveButtonClick">Leave</VBtn> -->
-                    <VBtn @click="isActiveLeaveConfirmDialog = true">Leave</VBtn>
-                    <ConfirmDialog
-                    :is-active="isActiveLeaveConfirmDialog"
-                    title="Queue leave"
-                    text="Do you want to leve the Queue?"
-                    @click:ok="leaveButtonClick"
-                    @click:close="isActiveLeaveConfirmDialog = false"
-                    ></ConfirmDialog>
-
-                    <VBtn @click="isActiveInfoDialog = true">Info</VBtn>
-                    <VBtn>Actions</VBtn>
-                </template>
-            </VToolbar>
-
-            <VCardText>
-                <VDataTableVirtual
-                :headers="tableHeaders"
-                :items="tableItems"
-                height="300"
-                >
-                    <template v-slot:item.action="{ item }">
-                        <div v-if="item.userId != queueStore['userObject']['userId']">
-                            <VTooltip
-                            text="Swap"
-                            location="bottom"
-                            >
-                                <template v-slot:activator="{ props }">
-                                    <VBtn
-                                    icon
-                                    size="x-small"
-                                    :disabled="!item.actionPermissions.swap"
-                                    v-bind="props"
-                                    @click="skipButtonClick(item)"
-                                    class="mr-2"
-                                    >
-                                        <VIcon>mdi-swap-vertical</VIcon>
-                                    </VBtn>
-                                </template>
-                            </VTooltip>
-
-                            <VTooltip
-                            text="Replace"
-                            location="bottom"
-                            >
-                                <template v-slot:activator="{ props }">
-                                    <VBtn
-                                    icon
-                                    size="x-small"
-                                    :disabled="!item.actionPermissions.replace"
-                                    v-bind="props"
-                                    >
-                                        <VIcon>mdi-autorenew</VIcon>
-                                    </VBtn>
-                                </template>
-                            </VTooltip>
-                        </div>
-                    </template>
-                </VDataTableVirtual>
-
-                <VBtn>Member</VBtn>
-            </VCardText>
-
-            <VToolbar
-            density="compact"
-            >
-                <template v-slot:append>
-                    <div class="px-4">
-                        <span class="text-button">Role: </span>
-                        <span class="text-button">Member ({{ queueStore['userObject']['role'] }})</span>
-                    </div>
-                </template>
-            </VToolbar>
-        </VCard>
+        <RoleComponent
+        @click:swap="item => console.log('swap (member): ', item)"
+        @click:replace="item => console.log('replace (member): ', item)"
+        >
+            <template v-slot:member>
+                <VBtn @click="isActiveLeaveConfirmDialog = true">Leave</VBtn>
+                <VBtn @click="isActiveInfoDialog = true">Info</VBtn>
+                <VBtn>Actions</VBtn>
+            </template>
+        </RoleComponent>
     </div>
 
-    <div v-else-if="queueStore['userObject']['role'] == 'QR00003'">
-        <VCard>
-            <VToolbar>
-                <template v-slot:title>
-                    {{ queueStore['queueObject']['title'] }}
-                </template>
-
-                <template v-slot:append>
-                    <VBtn @click="leaveButtonClick">Leave</VBtn>
-                    <VBtn @click="isActiveInfoDialog = true">Info</VBtn>
-                    <VBtn>Actions</VBtn>
-                </template>
-            </VToolbar>
-
-            <VCardText>
-                <VDataTableVirtual
-                :headers="tableHeaders"
-                :items="tableItems"
-                height="300"
-                >
-                    <template v-slot:item.action="{ item }">
-                        <div v-if="item.userId != queueStore['userObject']['userId']">
-                            <VTooltip
-                            text="Swap"
-                            location="bottom"
-                            >
-                                <template v-slot:activator="{ props }">
-                                    <VBtn
-                                    icon
-                                    size="x-small"
-                                    :disabled="!item.actionPermissions.swap"
-                                    v-bind="props"
-                                    @click="skipButtonClick(item)"
-                                    class="mr-2"
-                                    >
-                                        <VIcon>mdi-swap-vertical</VIcon>
-                                    </VBtn>
-                                </template>
-                            </VTooltip>
-
-                            <VTooltip
-                            text="Replace"
-                            location="bottom"
-                            >
-                                <template v-slot:activator="{ props }">
-                                    <VBtn
-                                    icon
-                                    size="x-small"
-                                    :disabled="!item.actionPermissions.replace"
-                                    v-bind="props"
-                                    >
-                                        <VIcon>mdi-autorenew</VIcon>
-                                    </VBtn>
-                                </template>
-                            </VTooltip>
-                        </div>
-                    </template>
-                </VDataTableVirtual>
-
-                <VBtn>Leader</VBtn>
-            </VCardText>
-
-            <VToolbar
-            density="compact"
-            >
-                <template v-slot:append>
-                    <div class="px-4">
-                        <span class="text-button">Role: </span>
-                        <span class="text-button">Leader ({{ queueStore['userObject']['role'] }})</span>
-                    </div>
-                </template>
-            </VToolbar>
-        </VCard>
+    <div v-else-if="queueUserStore['userObject']['role'] == 'QR00003'">
+        <!--  -->
+        <RoleComponent
+        @click:swap="console.log('swap (leader): ', item)"
+        @click:replace="console.log('replace (leader): ', item)"
+        >
+            <template v-slot:member>
+                <VBtn @click="isActiveInfoDialog = true">Info</VBtn>
+                <VBtn>Actions</VBtn>
+            </template>
+        </RoleComponent>
     </div>
 
     <ContentInfoDialog
@@ -416,8 +190,18 @@ onMounted(() => {
     @click:close="isActiveInfoDialog = false"
     ></ContentInfoDialog>
 
-    <p>Queue key: {{ queueStore['queueObject']['key'] }}</p>
-    <p>Queue role: {{ queueStore['userObject']['role'] }}</p>
+
+    <ConfirmDialog
+    :is-active="isActiveLeaveConfirmDialog"
+    title="Queue leave"
+    text="Do you want to leve the Queue?"
+    @click:ok="leaveButtonClick"
+    @click:close="isActiveLeaveConfirmDialog = false"
+    ></ConfirmDialog>
+
+
+    <p>Queue key: {{ queueUserStore['queueObject']['key'] }}</p>
+    <p>Queue role: {{ queueUserStore['userObject']['role'] }}</p>
 </template>
 
 <style scope>
