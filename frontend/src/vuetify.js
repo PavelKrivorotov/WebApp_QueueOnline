@@ -4,6 +4,9 @@ import '@mdi/font/css/materialdesignicons.css'
 import { createVuetify } from 'vuetify';
 import { md1 } from 'vuetify/blueprints';
 
+import { VApp } from 'vuetify/components/VApp';
+import { VAppBar } from 'vuetify/components/VAppBar';
+import { VMain } from 'vuetify/components/VMain';
 import { VToolbar, VToolbarItems } from 'vuetify/components/VToolbar';
 import { VContainer, VRow, VCol, VSpacer } from 'vuetify/components/VGrid';
 import { VMenu } from 'vuetify/components/VMenu';
@@ -27,6 +30,10 @@ const vuetify = createVuetify({
         defaultSet: 'mdi',
     },
     components: {
+        VApp,
+        VAppBar,
+        VMain,
+
         VToolbar,
         VToolbarItems,
 
