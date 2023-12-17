@@ -15,6 +15,12 @@ from .dependencies import AllowAny, BaseAuthDepends, IsAuthenticated
 
 router = APIRouter()
 
+@router.get('/user/token-confirm', dependencies=[Depends(IsAuthenticated)])
+def user_token_confirm() -> Response:
+    return Response(
+        status_code=status.HTTP_200_OK
+    )
+
 @router.post('/user/registrate', dependencies=[Depends(AllowAny)])
 def user_registrate(
         data: UserCreateSchemeIN,
