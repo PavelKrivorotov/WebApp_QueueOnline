@@ -11,8 +11,7 @@ const authStore = useAuthStore();
 
 async function userLogout() {
     try {
-        // const response = await authLogout;
-
+        const response = await authLogout(authStore['authorizationToken']);
         authStore['isAuthenticated'] = false;
         authStore['authorizationToken'] = null;
 

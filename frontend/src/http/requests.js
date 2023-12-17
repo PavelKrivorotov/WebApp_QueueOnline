@@ -50,7 +50,20 @@ export async function authLogin(formData) {
     }
 }
 
-export async function authLogout(token) {}
+export async function authLogout(token) {
+    try {
+        const response = await ax.delete(
+            URL_DELETE_AUTH_LOGOUT, {
+                headers: {
+                    'Token': token,
+                }
+            }
+        )
+    }
+    catch (error) {
+        throw error
+    }
+}
 
 
 export async function queueCreate(token, formData) {
