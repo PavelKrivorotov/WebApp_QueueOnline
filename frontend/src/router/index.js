@@ -1,9 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
-
 import { useAuthStore } from '../pinia/auth-store'
 
 import HomeView from '../views/HomeView.vue';
-import AuthView from '../views/AuthView.vue'
 import LoginView from '../views/LoginView.vue';
 import RegistrationView from '../views/RegistrationView.vue';
 
@@ -26,7 +24,6 @@ const router = createRouter({
 		{
 			path: '/auth',
 			name: 'auth-view',
-			component: AuthView,
 			redirect: {
 				name: 'login-view',
 			},
