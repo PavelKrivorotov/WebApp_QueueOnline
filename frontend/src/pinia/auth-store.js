@@ -19,9 +19,10 @@ export const useAuthStore = defineStore('auth-store', () => {
 
         else {
             try {
-                const response = await tokenConfirm(token);
                 isAuthenticated.value = true;
                 authorizationToken.value = token;
+
+                await tokenConfirm(token);
             }
             catch (error) {
                 console.log('Error in auth-store -> setAuthStore');
