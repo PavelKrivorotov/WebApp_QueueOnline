@@ -3,9 +3,11 @@ import RegistrationForm from '../components/forms/RegistrationForm.vue'
 </script>
 
 <template>
-    <VContainer fluid>
+    <VContainer class="fill-height" fluid>
         <VRow>
-            <RegistrationForm></RegistrationForm>
+            <VCol>
+                <RegistrationForm></RegistrationForm>
+            </VCol>
         </VRow>
     </VContainer>
 </template>

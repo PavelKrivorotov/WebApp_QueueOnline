@@ -39,7 +39,7 @@ function errorRequest(error) {
 </script>
 
 <template>
-    <VContainer>
+    <VContainer class="fill-height" fluid>
         <VRow>
             <VCol>
                 <LoginForm
