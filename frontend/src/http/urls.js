@@ -1,3 +1,4 @@
+export const URL_GET_TOKEN_CONFIRM = '/user/token-confirm';
 
 export const URL_POST_AUTH_REGISTARTION = '/user/registrate';
 export const URL_POST_AUTH_LOGIN = '/user/login';

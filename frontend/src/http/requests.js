@@ -4,7 +4,9 @@ import {
     AXIOS_BASE_URL,
     AXIOS_TIMEOUT,
     AXIOS_HEADERS } from '../settings';
-import { 
+import {
+    URL_GET_TOKEN_CONFIRM,
+
     URL_POST_AUTH_REGISTARTION,
     URL_POST_AUTH_LOGIN,
     URL_DELETE_AUTH_LOGOUT,
@@ -21,6 +23,23 @@ const ax = axios.create({
     timeout: AXIOS_TIMEOUT,
     headers: AXIOS_HEADERS,
 });
+
+export async function tokenConfirm(token) {
+    try {
+        const response = await ax.get(
+            URL_GET_TOKEN_CONFIRM, {
+                headers: {
+                    'Token': token,
+                }
+            }
+        );
+
+        return response;
+    }
+    catch (error) {
+        throw error;
+    }
+}
 
 export async function authRegistartion(formData) {
     try {
@@ -58,7 +77,9 @@ export async function authLogout(token) {
                     'Token': token,
                 }
             }
-        )
+        );
+
+        return response;
     }
     catch (error) {
         throw error
