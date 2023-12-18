@@ -2,9 +2,10 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-from settings import FASTAPI_DATABASE_URL
+from utils import db_url as url
 
-engine = create_engine(FASTAPI_DATABASE_URL)
+db_url = url()
+engine = create_engine(db_url)
 
 SessionLocal = sessionmaker(
     autocommit=False,

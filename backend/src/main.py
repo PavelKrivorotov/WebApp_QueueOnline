@@ -23,4 +23,13 @@ app.include_router(chat_router)
 
 
 if __name__ == '__main__':
-    uvicorn.run('main:app', log_level='info')
+    # For local (host="127.0.0.1", port=8000)
+    # ...
+
+    # For docker (host="0.0.0.0", port=8000)
+    uvicorn.run(
+        'main:app',
+        host = settings.FASTAPI_HOST,
+        port = settings.FASTAPI_PORT,
+        log_level = settings.FASTAPI_LOG_LEVEL
+    )
