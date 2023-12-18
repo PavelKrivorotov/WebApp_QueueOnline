@@ -1,3 +1,15 @@
+import os
+from  pathlib import Path 
+import dotenv
+
+# Loading .env variables
+BASE_DIR = Path(__file__).parent
+
+dotenv.load_dotenv(
+    dotenv_path = Path(BASE_DIR.parent, '.env')
+)
+
+
 # Middlware section
 FASTAPI_MIDDLWEARE_ALLOWED_ORIGINS = [
     'http://localhost:5173',
@@ -30,16 +42,16 @@ FASTAPI_DEFAULT_PERMISSION_DEPENDENCIES = 'AllowAny'
 
 # Database section:
 FASTAPI_DATABASE = {
-    'MIDDLWARE': 'postgresql',
-    'USER':      'postgres',
-    'PASSWORD':  'postgres',
-    'NAME':      'task_15_11_2023',
-    'HOST':      '127.0.0.1',
-    'PORT':      5432,
+    'MIDDLWARE': os.getenv('FASTAPI_DATABASE_MIDDLWARE'),
+    'USER':      os.getenv('FASTAPI_DATABASE_USER'),
+    'PASSWORD':  os.getenv('FASTAPI_DATABASE_PASSWORD'),
+    'NAME':      os.getenv('FASTAPI_DATABASE_NAME'),
+    'HOST':      os.getenv('FASTAPI_DATABASE_HOST'),
+    'PORT':      int(os.getenv('FASTAPI_DATABASE_PORT')),
 }
 
 
 # Server ssection
-FASTAPI_HOST = "127.0.0.1"
-FASTAPI_PORT = 8000
+FASTAPI_HOST = os.getenv('FASTAPI_HOST')
+FASTAPI_PORT = int(os.getenv('FASTAPI_PORT'))
 FASTAPI_LOG_LEVEL = "info"
