@@ -13,7 +13,6 @@ export const AXIOS_HEADERS = {
 
 // Local storage section
 export const LOCALSTORAGE = {
-    EMAIL: 'EMAIL',
     AUTHORIZATION_TOKEN: 'AUTHORIZATION_TOKEN',
     QUEUE_KEY: 'QUEUE_KEY',
 };
