@@ -1,33 +1,18 @@
 import axios from 'axios';
 
-import {
-    AXIOS_BASE_URL,
-    AXIOS_TIMEOUT,
-    AXIOS_HEADERS } from '../settings';
-import {
-    URL_GET_TOKEN_CONFIRM,
-
-    URL_POST_AUTH_REGISTARTION,
-    URL_POST_AUTH_LOGIN,
-    URL_DELETE_AUTH_LOGOUT,
-
-    URL_POST_QUEUE_CREATE,
-    URL_GET_QUEUE_RETRIEVE,
-    URL_GET_QUEUE_QUEUES,
-
-    URL_GET_QUEUE_LIFETIMES } from './urls';
-
+import * as settings from '../settings'
+import * as urls from './urls'
 
 const ax = axios.create({
-    baseURL: AXIOS_BASE_URL,
-    timeout: AXIOS_TIMEOUT,
-    headers: AXIOS_HEADERS,
+    baseURL: `${settings.SERVER_PROTOCOL}://${settings.SERVER_HOST}:${settings.SERVER_PORT}`,
+    timeout: settings.AXIOS_TIMEOUT,
+    headers: settings.AXIOS_HEADERS,
 });
 
 export async function tokenConfirm(token) {
     try {
         const response = await ax.get(
-            URL_GET_TOKEN_CONFIRM, {
+            urls.URL_GET_TOKEN_CONFIRM, {
                 headers: {
                     'Token': token,
                 }
@@ -44,7 +29,7 @@ export async function tokenConfirm(token) {
 export async function authRegistartion(formData) {
     try {
         const response = await ax.post(
-            URL_POST_AUTH_REGISTARTION,
+            urls.URL_POST_AUTH_REGISTARTION,
             formData,
         );
 
@@ -58,7 +43,7 @@ export async function authRegistartion(formData) {
 export async function authLogin(formData) {
     try {
         const response = await ax.post(
-            URL_POST_AUTH_LOGIN,
+            urls.URL_POST_AUTH_LOGIN,
             formData,
         );
 
@@ -72,7 +57,7 @@ export async function authLogin(formData) {
 export async function authLogout(token) {
     try {
         const response = await ax.delete(
-            URL_DELETE_AUTH_LOGOUT, {
+            urls.URL_DELETE_AUTH_LOGOUT, {
                 headers: {
                     'Token': token,
                 }
@@ -90,7 +75,7 @@ export async function authLogout(token) {
 export async function queueCreate(token, formData) {
     try {
         const response = await ax.post(
-            URL_POST_QUEUE_CREATE,
+            urls.URL_POST_QUEUE_CREATE,
             formData, {
                 headers: {
                     'Token': token,
@@ -109,7 +94,7 @@ export async function queueCreate(token, formData) {
 export async function queueRetrieve(token, queueKey) {
     try {
         const response = await ax.get(
-            `${URL_GET_QUEUE_RETRIEVE}/${queueKey}`, {
+            `${urls.URL_GET_QUEUE_RETRIEVE}/${queueKey}`, {
                 headers: {
                     'Token': token,
                     'Content-Type': 'application/json',
@@ -127,7 +112,7 @@ export async function queueRetrieve(token, queueKey) {
 export async function queueQueues(token) {
     try {
         const response = await ax.get(
-            URL_GET_QUEUE_QUEUES, {
+            urls.URL_GET_QUEUE_QUEUES, {
                 headers: {
                     'Token': token,
                     'Content-Type': 'application/json',
@@ -146,7 +131,7 @@ export async function queueQueues(token) {
 export async function queueLifetimes() {
     try {
         const response = await ax.get(
-            URL_GET_QUEUE_LIFETIMES,
+            urls.URL_GET_QUEUE_LIFETIMES,
         );
 
         return response;
