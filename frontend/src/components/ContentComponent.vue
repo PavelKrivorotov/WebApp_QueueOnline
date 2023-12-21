@@ -130,7 +130,7 @@ function leaveButtonClick() {
     );
 }
 
-function skipButtonClick(item) {
+function swapButtonClick(item) {
     queueUserStore['wsConnect'].send(
         JSON.stringify({
             action_key: 'QA00009',
@@ -146,9 +146,8 @@ onMounted(() => {
 
 <template>
     <div v-if="queueUserStore['userObject']['role'] == 'QR00001'">
-    <!-- <div v-if="true"> -->
         <RoleComponent
-        @click:swap="item => console.log('swap (not member): ', item)"
+        @click:swap="item => swapButtonClick(item)"
         @click:replace="item => console.log('replace (not member): ', item)"
         >
             <template v-slot:not-member>
@@ -159,9 +158,8 @@ onMounted(() => {
     </div>
 
     <div v-else-if="queueUserStore['userObject']['role'] == 'QR00002'">
-    <!-- <div v-else-if="true"> -->
         <RoleComponent
-        @click:swap="item => console.log('swap (member): ', item)"
+        @click:swap="item => swapButtonClick(item)"
         @click:replace="item => console.log('replace (member): ', item)"
         >
             <template v-slot:member>
@@ -173,9 +171,8 @@ onMounted(() => {
     </div>
 
     <div v-else-if="queueUserStore['userObject']['role'] == 'QR00003'">
-        <!--  -->
         <RoleComponent
-        @click:swap="console.log('swap (leader): ', item)"
+        @click:swap="item => swapButtonClick(item)"
         @click:replace="console.log('replace (leader): ', item)"
         >
             <template v-slot:member>
@@ -205,8 +202,4 @@ onMounted(() => {
 </template>
 
 <style scope>
-.user-row {
-    color: red;
-    background-color: green;
-}
 </style>
