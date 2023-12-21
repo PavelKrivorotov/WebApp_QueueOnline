@@ -2,7 +2,7 @@ import { ref } from 'vue';
 import { defineStore } from 'pinia';
 
 import * as settings from '../settings';
-import { getLocalStorage, removeLocalStorage } from '../localstorage';
+import { getLocalStorage, setLocalStorage, removeLocalStorage } from '../localstorage';
 import { tokenConfirm } from '../http/requests';
 
 export const useAuthStore = defineStore('auth-store', () => {
@@ -36,10 +36,21 @@ export const useAuthStore = defineStore('auth-store', () => {
         }
     }
 
+    function authorizationComplete(token) {
+        isAuthenticated.value = true;
+        authorizationToken.value = token;
+
+        setLocalStorage(
+            settings.LOCALSTORAGE['AUTHORIZATION_TOKEN'],
+            token
+        );
+    }
+
     return {
         isAuthenticated,
         authorizationToken,
 
         setAuthStore,
+        authorizationComplete,
     }
 });

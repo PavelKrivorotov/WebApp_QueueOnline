@@ -10,31 +10,18 @@ import LoginForm from '../components/forms/LoginForm.vue';
 const router = useRouter();
 const authStore = useAuthStore();
 
-function beforeRequest() {
-
+function beforeRequest() {}
+function errorRequest(error) {
+    console.log('Error in `LoginView`:')
+    console.error(error)
 }
 
 function afterResponse(response) {
-    console.log(response)
-
-    const token = response.data['key'];
-    authStore['isAuthenticated'] = true;
-    authStore['authorizationToken'] = token;
-
-    // 
-    setLocalStorage(
-        LOCALSTORAGE['AUTHORIZATION_TOKEN'],
-        token
-    )
+    authStore.authorizationComplete(response.data['key']);
 
     router.push({
         path: '/',
     });
-}
-
-function errorRequest(error) {
-    console.log('Error in `LoginView`:')
-    console.error(error)
 }
 </script>
 
