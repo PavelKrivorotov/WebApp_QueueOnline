@@ -1,0 +1,32 @@
+version: 'v2.17.2'
+
+services:
+  frontend:
+    build: ./frontend/Dockerfile
+    container_name: frontend
+    ports:
+      - 127.0.0.1:80:80
+      - 127.0.0.1:8000:8000
+    depends_on:
+      backend:
+        condition: service_started
+
+  backend:
+    build: ./backend/Dockerfile
+    container_name: backend
+    depends_on:
+      database:
+        condition: service_healthy
+
+  database:
+    image: postgres:13
+    container_name: database
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=task_15_11_2023
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
