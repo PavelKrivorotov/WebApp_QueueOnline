@@ -13,6 +13,22 @@ dotenv.load_dotenv(
 # Middlware section
 FASTAPI_MIDDLWEARE_ALLOWED_ORIGINS = [
     'http://localhost:5173',
+
+    # Worked with docker
+    'http://127.0.0.1'
+
+
+    # Not ...
+    # 'http://127.0.0.1:8000',
+
+    # Not
+    # 'http://backend:8000',
+
+    # Not
+    # 'http://frontend:8000',
+
+    # Not
+    # 'http://127.0.0.1:80',
 ]
 
 FASTAPI_MIDDLWARE_ALLOWED_CREDENTIALS = True
