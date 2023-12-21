@@ -1,6 +1,14 @@
 <script setup>
 import { useForm, useField } from 'vee-validate';
+
+import { authRegistration } from '../../http/requests';
 import { EmailValidation, PasswordValidation, NameValidation } from '../../vee-validate/yup'
+
+const emits = defineEmits([
+    'beforeRequest',
+    'afterResponse',
+    'errorRequest',
+]);
 
 const { handleSubmit, handleReset } = useForm({
     validationSchema: {
@@ -16,8 +24,24 @@ const lastName = useField('lastName');
 const email = useField('email');
 const password = useField('password');
 
-const submit = handleSubmit((values) => {
-    alert(1`Registration submit!\n\nValues: ${values}`);
+const submit = handleSubmit(async (values) => {
+    const formData = new FormData();
+    formData.append('first_name', values.firstName);
+    formData.append('last_name', values.lastName);
+    formData.append('email', values.email);
+    formData.append('password', values.password);
+
+    try {
+        emits('beforeRequest');
+        const response = await authRegistration(formData);
+        emits('afterResponse', response);
+    }
+    catch (error) {
+        console.log('Error in RegistrationForm -> submit')
+        console.error(error);
+
+        emits('errorRequest');
+    }
 });
 </script>
 
