@@ -26,7 +26,7 @@ export async function tokenConfirm(token) {
     }
 }
 
-export async function authRegistartion(formData) {
+export async function authRegistration(formData) {
     try {
         const response = await ax.post(
             urls.URL_POST_AUTH_REGISTARTION,
