@@ -12,7 +12,7 @@ class AuthCRUD(BaseAuthCRUD):
         pass
 
     def create(self, db: Session, data: UserCreateSchemeIN) -> User | None:
-        user = self._retrieve_user(data.email)
+        user = self._retrieve_user(db, data.email)
         if (user is not None):
             return None
 
